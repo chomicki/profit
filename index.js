@@ -14,29 +14,35 @@ exports.getApiKey = function() {
 
 exports.appHeartbeat = function() {
     https.get(options.baseUrl + 'heartbeat', function(res) {
-        console.log("statusCode: ", res.statusCode);
-        console.log("headers: ", res.headers);
-
+        var code = res.statusCode;
         res.on('data', function(d) {
-            process.stdout.write(d);
+            d.code = code;
+            return d;
         });
 
-        }).on('error', function(e) {
-            console.error(e);
+    }).on('error', function(e) {
+        return {
+            'code': null,
+            'ok': false,
+            'error': 'Request error. Try again?'
+        };
     });
 };
 
 exports.venueHeartbeat = function(venue) {
     https.get(options.baseUrl + 'venues/' + venue + '/heartbeat', function(res) {
-        console.log("statusCode: ", res.statusCode);
-        console.log("headers: ", res.headers);
-
+        var code = res.statusCode;
         res.on('data', function(d) {
-            process.stdout.write(d);
+            d.code = code;
+            return d;
         });
 
-        }).on('error', function(e) {
-            console.error(e);
+    }).on('error', function(e) {
+        return {
+            'code': null,
+            'ok': false,
+            'error': 'Request error. Try again?'
+        };
     });
 };
 

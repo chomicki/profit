@@ -1,6 +1,6 @@
 {
   "name": "profit",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A Stockfighter (https://www.stockfighter.io) client.",
   "main": "index.js",
   "scripts": {
