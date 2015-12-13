@@ -12,14 +12,15 @@ exports.getApiKey = function() {
     return options.apiKey;
 };
 
-exports.appHeartbeat = function() {
+exports.appHeartbeat = function(callback) {
     https.get(options.baseUrl + 'heartbeat', function(res) {
         var code = res.statusCode;
+        res.setEncoding('utf8');
         res.on('data', function(d) {
-            d.code = code;
-            return d;
+            r = JSON.parse(d);
+            r.code = code;
+            callback(r);
         });
-
     }).on('error', function(e) {
         return {
             'code': null,
@@ -29,12 +30,14 @@ exports.appHeartbeat = function() {
     });
 };
 
-exports.venueHeartbeat = function(venue) {
+exports.venueHeartbeat = function(venue, callback) {
     https.get(options.baseUrl + 'venues/' + venue + '/heartbeat', function(res) {
         var code = res.statusCode;
+        res.setEncoding('utf8');
         res.on('data', function(d) {
-            d.code = code;
-            return d;
+            r = JSON.parse(d);
+            r.code = code;
+            callback(r);
         });
 
     }).on('error', function(e) {
