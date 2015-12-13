@@ -9,6 +9,6 @@
   "author": "Pawel Chomicki",
   "license": "UNLICENSED",
   "dependencies": {
-    "express": "^4.13.3"
+    "ws": "^0.8.1"
   }
 }
