@@ -1,14 +1,26 @@
 {
   "name": "profit",
-  "version": "0.1.7",
-  "description": "A Stockfighter (https://www.stockfighter.io) client.",
+  "version": "0.1.8",
+  "description": "A Stockfighter (https://www.stockfighter.io) API wrapper.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha test/test.js"
   },
   "author": "Pawel Chomicki",
-  "license": "UNLICENSED",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chomicki/profit"
+  },
+  "keywords": [
+    "starfighter",
+    "stockfighter"
+  ],
   "dependencies": {
     "ws": "^0.8.1"
+  },
+  "devDependencies": {
+    "mocha": "^2.3.4",
+    "sinon": "^1.17.2"
   }
 }

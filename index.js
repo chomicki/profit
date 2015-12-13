@@ -2,8 +2,9 @@ var https = require('https');
 var WebSocket = require('ws');
 
 var options = {
-    baseUrl: 'api.stockfighter.io',
-    basePath: '/ob/api'
+    baseUrl: 'www.stockfighter.io',
+    basePath: '/ob/api',
+    gmPath: '/gm'
 };
 
 exports.setApiKey = function(apiKey) {
@@ -17,7 +18,7 @@ exports.getApiKey = function() {
 var makeRequest = function(urlPath, method, callback) {
     reqOpt = {
         hostname: options.baseUrl,
-        path: options.basePath + urlPath,
+        path: urlPath,
         method: method,
         headers : {
             'Accept': '*/*',
@@ -26,12 +27,28 @@ var makeRequest = function(urlPath, method, callback) {
     };
     return https.request(reqOpt, function(res) {
         var code = res.statusCode;
-        console.log(code);
         res.setEncoding('utf8');
         res.on('data', function(d) {
-            r = JSON.parse(d);
-            r.code = code;
-            callback(r);
+            switch (code) {
+                case 200:
+                    r = JSON.parse(d);
+                    r.code = code;
+                    callback(r);
+                    break;
+                case 504:
+                    callback({
+                        'code': code,
+                        'ok': false,
+                        'error': 'Gateway Timeout'
+                    });
+                    break;
+                default:
+                    callback({
+                        'code': code,
+                        'ok': false,
+                        'error': 'Other Error'
+                    });
+            }
         });
     });
 };
@@ -75,35 +92,35 @@ var deleteRequest = function(urlPath, callback) {
 
 exports.getAppHeartbeat = function(callback) {
     getRequest(
-        '/heartbeat',
+        options.basePath + '/heartbeat',
         callback
     );
 };
 
 exports.getHeartbeat = function(venue, callback) {
     getRequest(
-        '/venues/' + venue + '/heartbeat',
+        options.basePath + '/venues/' + venue + '/heartbeat',
         callback
     );
 };
 
 exports.getStocks = function(venue, callback) {
     getRequest(
-        '/venues/' + venue + '/stocks',
+        options.basePath + '/venues/' + venue + '/stocks',
         callback
     );
-}
+};
 
 exports.getStock = function(venue, stock, callback) {
     getRequest(
-        '/venues/' + venue + '/stocks/' + stock,
+        options.basePath + '/venues/' + venue + '/stocks/' + stock,
         callback
     );
 };
 
 exports.postOrder = function(order, callback) {
     postRequest(
-        '/venues/' + order.venue + '/stocks/' + order.symbol + '/orders',
+        options.basePath + '/venues/' + order.venue + '/stocks/' + order.symbol + '/orders',
         order,
         callback
     );
@@ -111,43 +128,94 @@ exports.postOrder = function(order, callback) {
 
 exports.getQuote = function(venue, stock, callback) {
     getRequest(
-        '/venues/' + venue + '/stocks/' + stock + '/quote',
+        options.basePath + '/venues/' + venue + '/stocks/' + stock + '/quote',
         callback
     );
 };
 
 exports.getOrder = function(venue, stock, order, callback) {
     getRequest(
-        '/venues/' + venue + '/stocks/' + stock + '/orders/' + order,
+        options.basePath + '/venues/' + venue + '/stocks/' + stock + '/orders/' + order,
         callback
     );
 };
 
 exports.deleteOrder = function(venue, stock, order, callback) {
     deleteRequest(
-        '/venues/' + venue + '/stocks/' + stock + '/orders/' + order,
+        options.basePath + '/venues/' + venue + '/stocks/' + stock + '/orders/' + order,
         callback
     );
 };
 
 exports.getOrders = function(venue, account, callback) {
     getRequest(
-        '/venues/' + venue + '/accounts/' + account + '/orders',
+        options.basePath + '/venues/' + venue + '/accounts/' + account + '/orders',
         callback
     );
 };
 
 exports.getStockOrders = function(venue, account, stock, callback) {
     getRequest(
-        '/venues/' + venue + '/accounts/' + account + '/stocks/' +stock + '/orders',
+        options.basePath + '/venues/' + venue + '/accounts/' + account + '/stocks/' +stock + '/orders',
         callback
     );
 };
 
 exports.quotesSocket = function(account, venue) {
-    var qs = new WebSocket('ws://' + options.baseUrl + options.basePath + '/ws/' + account + '/venues/' + venue + '/tickertape');
+    var qs = new WebSocket('wss://' + options.baseUrl + options.basePath + '/ws/' + account + '/venues/' + venue + '/tickertape');
     qs.addEventListener('message', function(msg) {
         console.log(msg);
     });
     return qs;
+};
+
+exports.startLevel = function(levelNumber, callback) {
+    var level = getLevelFromNumber(levelNumber);
+    postRequest(
+        options.gmPath + '/levels/' + level,
+        {},
+        callback
+    );
+};
+
+var getLevelFromNumber = function(levelNumber) {
+    switch (levelNumber) {
+        case 1:
+            return "first_steps";
+        case 2:
+            return "chock_a_block";
+        default:
+            return null;
+    }
+};
+
+exports.restartLevel = function(instance, callback) {
+    postRequest(
+        options.gmPath + '/instances/' + instance + '/restart',
+        {},
+        callback
+    );
+};
+
+exports.stopLevel = function(instance, callback) {
+    postRequest(
+        options.gmPath + '/instances/' + instance + '/stop',
+        {},
+        callback
+    );
+};
+
+exports.resumeLevel = function(instance, callback) {
+    postRequest(
+        options.gmPath + '/instances/' + instance + '/resume',
+        {},
+        callback
+    );
+};
+
+exports.getLevel = function(instance, callback) {
+    getRequest(
+        options.gmPath + '/instances/' + instance,
+        callback
+    );
 };
