@@ -43,11 +43,10 @@ var makeRequest = function(urlPath, method, callback) {
                     });
                     break;
                 default:
-                    callback({
-                        'code': code,
-                        'ok': false,
-                        'error': 'Other Error'
-                    });
+                    r = JSON.parse(d);
+                    r.code = code;
+                    callback(r);
+                    break;
             }
         });
     });
@@ -58,9 +57,9 @@ var getRequest = function(urlPath, callback) {
     request.end();
     request.on('error', function(e) {
         callback({
-            'code': null,
+            'code': e.code || null,
             'ok': false,
-            'error': e
+            'error': e.message
         });
     });
 };
@@ -120,8 +119,8 @@ exports.getStock = function(venue, stock, callback) {
 
 exports.postOrder = function(order, callback) {
     postRequest(
-        options.basePath + '/venues/' + order.venue + '/stocks/' + order.symbol + '/orders',
-        order,
+        options.basePath + '/venues/' + order.venue + '/stocks/' + order.stock + '/orders',
+        JSON.stringify(order),
         callback
     );
 };
