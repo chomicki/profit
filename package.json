@@ -21,6 +21,6 @@
   },
   "devDependencies": {
     "mocha": "^2.3.4",
-    "sinon": "^1.17.2"
+    "nock": "^3.4.0"
   }
 }
