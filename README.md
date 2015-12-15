@@ -1,5 +1,7 @@
 # profit
-[![npm version](https://badge.fury.io/js/profit.svg)](https://badge.fury.io/js/profit)
+
+![npm version](https://img.shields.io/npm/v/profit.svg)
+![npmp license](https://img.shields.io/npm/l/profit.svg)
 
 profit is a [Stockfighter](https://www.stockfighter.io) API wrapper in node.js.
 
