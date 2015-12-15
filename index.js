@@ -160,14 +160,6 @@ exports.getStockOrders = function(venue, account, stock, callback) {
     );
 };
 
-exports.quotesSocket = function(account, venue) {
-    var qs = new WebSocket('wss://' + options.baseUrl + options.basePath + '/ws/' + account + '/venues/' + venue + '/tickertape');
-    qs.addEventListener('message', function(msg) {
-        console.log(msg);
-    });
-    return qs;
-};
-
 exports.startLevel = function(levelNumber, callback) {
     var level = getLevelFromNumber(levelNumber);
     postRequest(
@@ -217,4 +209,12 @@ exports.getLevel = function(instance, callback) {
         options.gmPath + '/instances/' + instance,
         callback
     );
+};
+
+exports.quotesSocket = function(account, venue) {
+    var qs = new WebSocket('wss://' + options.baseUrl + options.basePath + '/ws/' + account + '/venues/' + venue + '/tickertape');
+    qs.addEventListener('message', function(msg) {
+        console.log(msg);
+    });
+    return qs;
 };
